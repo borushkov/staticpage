@@ -1,0 +1,74 @@
+Django terminal
+python manage.py shell
+>>from django.contrib.auth.models import User
+>>from news.models import Author, Category, Post, Comment, PostCategory
+>>from django.utils import timezone
+
+>>user1 = User.objects.create_user('user1', 'user1@mail.com', 'password123')
+>>user2 = User.objects.create_user('user2', 'user2@mail.com', 'password123')
+
+>>author1 = Author.objects.create(user=user1)
+>>author2 = Author.objects.create(user=user2)
+
+>>category1 = Category.objects.create(name='Технологии')
+>>category2 = Category.objects.create(name='Наука')
+>>category3 = Category.objects.create(name='Политика')
+>>category4 = Category.objects.create(name='Спорт')
+
+>>post1 = Post.objects.create(author=author1, post_type='AR',title='Первая статья',content='Текст первой статьи о технологиях и науке.')
+>>post2 = Post.objects.create(author=author1, post_type='AR', title='Вторая статья', content='Текст второй статьи о политике')
+>>post3 = Post.objects.create( author=author2, post_type='NW', title='Спортивная новость', content='Текст новости о спортивных событиях.')
+
+>>PostCategory.objects.create(post=post1, category=category1)
+>>PostCategory.objects.create(post=post1, category=category2)
+>>PostCategory.objects.create(post=post2, category=category3)
+>>PostCategory.objects.create(post=post3, category=category4)
+
+>>comment1 = Comment.objects.create(post=post1, user=user1, text='Отличная статья!')
+>>comment2 = Comment.objects.create(post=post1, user=user2, text='Интересный материал')
+>>comment3 = Comment.objects.create(post=post2, user=user2, text='Согласен с автором')
+>>comment4 = Comment.objects.create(post=post3, user=user1, text='Важная новость')
+
+post1.like()
+post1.like()
+post1.dislike()
+
+post2.like()
+post2.like()
+post2.like()
+post2.dislike()
+
+post3.like()
+post3.dislike()
+post3.dislike() 
+
+comment1.like()
+comment1.like()
+
+comment2.dislike()
+comment2.dislike()
+
+comment3.like()
+
+comment4.like()
+comment4.like()
+comment4.like()
+
+author1.update_rating()
+author2.update_rating()
+
+>>> best_author = Author.objects.order_by('-rating').first()
+>>> print(f"Лучший пользователь: {best_author.user.username}, рейтинг: {best_author.rating}")
+Лучший пользователь: user1, рейтинг: 8
+
+>>> best_post = Post.objects.filter(post_type='AR').order_by('-rating').first()
+>>> print(f"Дата: {best_post.created_at}")
+Дата: 2025-11-24 10:15:55.720118+00:00
+>>> print(f"Автор: {best_post.author.user.username}")
+Автор: user2
+>>> print(f"Рейтинг: {best_post.rating}")
+Рейтинг: 2
+>>> print(f"Заголовок: {best_post.title}")
+Заголовок: Вторая статья
+>>> print(f"Превью: {best_post.preview()}")
+Превью: Текст второй статьи о политике.
