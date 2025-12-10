@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Sum
+from django.urls import reverse
 
 class Author(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -49,6 +50,9 @@ class Post(models.Model):
 
     def preview(self):
         return self.content[:124] + '...' if len(self.content) > 124 else self.content
+    
+    def get_absolute_url(self):
+        return reverse('post_detail', args=[str(self.id)])
 
 class PostCategory(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
@@ -68,3 +72,4 @@ class Comment(models.Model):
     def dislike(self):
         self.rating -= 1
         self.save()
+

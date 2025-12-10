@@ -7,12 +7,11 @@ posts
 
 {% block content %}
 <h1>News</h1>
-   <form action="" method="get">
-       {{ filterset.form.as_p }}
-       <input type="submit" value="Найти" />
-   </form>
+<form action="" method="get">
+    {{ filterset.form.as_p }}
+    <input type="submit" value="Найти" />
+</form>
 <hr>
-<h2>Всего статей-> {{posts|length}}</h2>
 {% if posts %}
 <div style="text-align: center;">
     <table style="display: inline-block;">
