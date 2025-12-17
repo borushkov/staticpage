@@ -15,6 +15,10 @@ import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+LOGIN_URL = '/accounts/login/'  
+LOGOUT_URL = '/accounts/logout/'
+LOGIN_REDIRECT_URL = '/news/'  # на страницу новостей
+LOGOUT_REDIRECT_URL = '/accounts/logout/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -28,7 +32,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
 
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -42,6 +52,14 @@ INSTALLED_APPS = [
     'django.contrib.flatpages',
     'django.contrib.sites',
     'django_filters',
+    'protect',
+    'sign',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.yandex',
 ]
 
 SITE_ID = 1
@@ -55,9 +73,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware', 
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 ROOT_URLCONF = 'NewsPaper.urls'
+
 
 TEMPLATES = [
     {
@@ -123,6 +148,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

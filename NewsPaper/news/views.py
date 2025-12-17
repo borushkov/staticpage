@@ -1,9 +1,10 @@
 
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from .models import Post
 from .filters import PostFilter
 from .forms import PostForm, NewsForm, ArticleForm
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 class PostList(ListView):
@@ -93,6 +94,10 @@ class ArticleDelete(DeleteView):
     model = Post
     template_name = 'delete_article.html'
     success_url = reverse_lazy('posts.html')
+
+class ProtectedView(TemplateView):
+    template_name = 'protected_page.html'
+    
 
 
 

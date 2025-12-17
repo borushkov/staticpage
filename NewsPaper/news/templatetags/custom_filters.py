@@ -15,7 +15,7 @@ def censor(value):
  
     for k in range(len(result)):
             if result[k].lower() in CENSOR_WORDS:
-                result[k] = result[k][0] + ('*'* (len(result[k])-1))
+                result[k] = result[k][0] + ('*' * (len(result[k])-1))
     return  " ".join(result)
             
     
