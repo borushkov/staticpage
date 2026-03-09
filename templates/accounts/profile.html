@@ -1,0 +1,13 @@
+{% extends "base_p.html" %}
+
+{% block content %}
+<div class="profile-card">
+    <h1>Профиль</h1>
+
+    <div class="profile-info">
+        <p><b>Имя:</b> {{ user.username }}</p>
+        <p><b>Email:</b> {{ user.email }}</p>
+        <p><b>Дата регистрации:</b> {{ user.date_joined }}</p>
+    </div>
+</div>
+{% endblock %}

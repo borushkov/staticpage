@@ -1,0 +1,397 @@
+{% extends 'base_p.html' %}
+{% load custom_filters %}
+
+{% block title %}Все публикации - NewsPaper{% endblock %}
+
+{% block extra_styles %}
+/* Masonry Grid Layout */
+.posts-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s var(--transition-smooth);
+}
+
+.posts-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-cool));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.posts-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.masonry-grid {
+    column-count: 3;
+    column-gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+@media (max-width: 1200px) {
+    .masonry-grid {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 768px) {
+    .masonry-grid {
+        column-count: 1;
+    }
+}
+
+.post-card {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.4s var(--transition-smooth);
+    cursor: pointer;
+    animation: fadeInUp 0.6s var(--transition-smooth) backwards;
+    position: relative;
+}
+
+.post-card:nth-child(1) { animation-delay: 0.1s; }
+.post-card:nth-child(2) { animation-delay: 0.15s; }
+.post-card:nth-child(3) { animation-delay: 0.2s; }
+.post-card:nth-child(4) { animation-delay: 0.25s; }
+.post-card:nth-child(5) { animation-delay: 0.3s; }
+.post-card:nth-child(6) { animation-delay: 0.35s; }
+
+.post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-warm), var(--accent-cool));
+    opacity: 0;
+    transition: opacity 0.3s var(--transition-smooth);
+}
+
+.post-card:hover::before {
+    opacity: 1;
+}
+
+.post-type-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+}
+
+.badge-article {
+    background: rgba(44, 95, 125, 0.9);
+    color: white;
+}
+
+.badge-news {
+    background: rgba(212, 114, 44, 0.9);
+    color: white;
+}
+
+.post-content {
+    padding: 1.5rem;
+}
+
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.post-date {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dot-separator {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+}
+
+.post-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.post-preview {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.post-categories {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.category-tag {
+    padding: 0.35rem 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    transition: all 0.3s var(--transition-smooth);
+}
+
+.category-tag:hover {
+    background: var(--accent-warm);
+    color: white;
+}
+
+.post-rating {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.rating-icon {
+    font-size: 1.1rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.page-link {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s var(--transition-smooth);
+    border: 1px solid var(--border-subtle);
+}
+
+.page-link:hover {
+    background: var(--accent-warm);
+    color: white;
+    border-color: var(--accent-warm);
+    transform: translateY(-2px);
+}
+
+.page-current {
+    background: var(--accent-cool);
+    color: white;
+    border-color: var(--accent-cool);
+}
+
+.page-ellipsis {
+    color: var(--text-secondary);
+    padding: 0 0.5rem;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeIn 0.6s var(--transition-smooth);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.empty-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="posts-header">
+    <h1 class="posts-title">Свежие публикации</h1>
+    <p class="posts-subtitle">Всего материалов: {{ posts|length }}</p>
+</div>
+
+{% if posts %}
+<div class="masonry-grid">
+    {% for post in posts %}
+    <article class="post-card" onclick="window.location.href='{% url 'post_detail' post.id %}'">
+        <span class="post-type-badge {% if post.post_type == 'AR' %}badge-article{% else %}badge-news{% endif %}">
+            {% if post.post_type == 'AR' %}Статья{% else %}Новость{% endif %}
+        </span>
+        
+        <div class="post-content">
+            <div class="post-meta">
+                <span class="post-date">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    {{ post.created_at|date:'d.m.Y' }}
+                </span>
+                <span class="dot-separator"></span>
+                <span class="post-author">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    {{ post.author.user.username }}
+                </span>
+            </div>
+
+            <h2 class="post-title">{{ post.title|censor }}</h2>
+            
+            <p class="post-preview">{{ post.preview|censor }}</p>
+
+            <div class="post-footer">
+                <div class="post-categories">
+                    {% for category in post.categories.all|slice:":3" %}
+                    <span class="category-tag">{{ category.name }}</span>
+                    {% endfor %}
+                </div>
+                
+                <div class="post-rating">
+                    <span class="rating-icon">
+                        {% if post.rating >= 0 %}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        {% else %}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        {% endif %}
+                    </span>
+                    {{ post.rating }}
+                </div>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+
+<!-- Pagination -->
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1" class="page-link">1</a>
+        {% if page_obj.previous_page_number != 1 %}
+            <span class="page-ellipsis">...</span>
+            <a href="?page={{ page_obj.previous_page_number }}" class="page-link">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+    
+    <span class="page-link page-current">{{ page_obj.number }}</span>
+    
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            <span class="page-ellipsis">...</span>
+            <a href="?page={{ paginator.num_pages }}" class="page-link">{{ paginator.num_pages }}</a>
+        {% endif %}
+    {% endif %}
+</nav>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📰</div>
+    <h2 class="empty-title">Публикаций пока нет</h2>
+    <p class="empty-text">Станьте первым, кто создаст материал!</p>
+</div>
+{% endif %}
+{% endblock %}

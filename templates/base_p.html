@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NewsPaper{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #faf8f3;
+            --bg-secondary: #ffffff;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --accent-warm: #d4722c;
+            --accent-cool: #2c5f7d;
+            --border-subtle: #e8e4dc;
+            --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* PROFILE DROPDOWN */
+        .profile-menu {
+            position: relative;
+        }
+
+        .profile-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            padding: 0.6rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-primary);
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .profile-btn:hover {
+            border-color: var(--accent-warm);
+            transform: translateY(-2px);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 120%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-subtle);
+            border-radius: 14px;
+            box-shadow: var(--shadow-medium);
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(-8px);
+            pointer-events: none;
+            transition: all 0.3s var(--transition-smooth);
+            z-index: 2000;
+        }
+
+        .profile-dropdown a {
+            display: block;
+            padding: 0.8rem 1rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: background 0.2s;
+        }
+
+        .profile-dropdown a:hover {
+            background: var(--bg-primary);
+        }
+
+        /* ✅ СТИЛИ ДЛЯ КНОПКИ ВЫХОДА */
+        .logout-form {
+            margin: 0;
+            padding: 0;
+        }
+
+        .logout-btn {
+            width: 100%;
+            display: block;
+            padding: 0.8rem 1rem;
+            background: none;
+            border: none;
+            text-align: left;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            transition: background 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: var(--bg-primary);
+        }
+
+        .profile-menu.open .profile-dropdown {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(250, 248, 243, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            z-index: 1000;
+            padding: 1.5rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Crimson Pro', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            position: relative;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-warm), var(--accent-cool));
+            transition: width 0.4s var(--transition-smooth);
+        }
+
+        .logo:hover::after {
+            width: 100%;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s var(--transition-smooth);
+            position: relative;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--accent-warm);
+            opacity: 0;
+            transition: opacity 0.3s var(--transition-smooth);
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-link:hover::before {
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        /* Decorative Background Elements */
+        .bg-decoration {
+            position: fixed;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-circle-1 {
+            top: -10%;
+            right: -5%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212, 114, 44, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .bg-circle-2 {
+            bottom: -15%;
+            left: -10%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(44, 95, 125, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        /* Content Block */
+        {% block extra_styles %} {% endblock %}
+    </style>
+</head>
+<body>
+    <div class="bg-decoration bg-circle-1"></div>
+    <div class="bg-decoration bg-circle-2"></div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="{% url 'post_list' %}" class="logo">NewsPaper</a>
+            
+            <nav class="nav">
+                <a href="{% url 'post_list' %}" class="nav-link">Все публикации</a>
+                <a href="{% url 'search' %}" class="nav-link">Поиск</a>
+                <a href="{% url 'news_create' %}" class="nav-link">Добавить новость</a>
+                <a href="{% url 'article_create' %}" class="nav-link">Создать статью</a>
+                
+                {% if user.is_authenticated %}
+                <div class="profile-menu">
+                    <button class="profile-btn">
+                        👤 {{ user.username }}
+                    </button>
+
+                    <div class="profile-dropdown">
+                        <a href="{% url 'profile' %}">Профиль</a>
+                        <a href="{% url 'my_posts' %}">Мои публикации</a>
+
+                        <!-- ✅ ФОРМА ВЫХОДА С ПРАВИЛЬНЫМ URL -->
+                        <form action="{% url 'logout' %}" method="post" class="logout-form">
+                            {% csrf_token %}
+                            <button type="submit" class="logout-btn">Выйти</button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'login' %}" class="nav-link">Вход</a>
+                <a href="{% url 'signup' %}" class="nav-link">Регистрация</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_scripts %}{% endblock %}
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btn = document.querySelector(".profile-btn");
+        const menu = document.querySelector(".profile-menu");
+
+        if (btn && menu) {
+            // Открыть/закрыть меню по клику
+            btn.addEventListener("click", function (e) {
+                e.stopPropagation();
+                menu.classList.toggle("open");
+            });
+
+            // Закрыть при клике вне меню
+            document.addEventListener("click", function () {
+                menu.classList.remove("open");
+            });
+        }
+    });
+    </script>
+</body>
+</html>

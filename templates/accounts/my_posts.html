@@ -1,0 +1,16 @@
+{% extends "base_p.html" %}
+
+{% block content %}
+<h1>Мои публикации</h1>
+
+{% for post in posts %}
+    <div class="post-card">
+        <h3>{{ post.title }}</h3>
+        <p>{{ post.preview }}</p>
+        <a href="{{ post.get_absolute_url }}">Читать →</a>
+    </div>
+{% empty %}
+    <p>У вас пока нет публикаций</p>
+{% endfor %}
+
+{% endblock %}

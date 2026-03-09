@@ -1,0 +1,234 @@
+{% extends 'base_p.html' %}
+
+{% block title %}
+Удаление {% if 'news' in request.path %}новости{% else %}статьи{% endif %} - NewsPaper
+{% endblock %}
+
+{% block extra_styles %}
+.delete-container {
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeInUp 0.8s var(--transition-smooth);
+}
+
+.delete-card {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: var(--shadow-medium);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.delete-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #dc3545, #c82333);
+}
+
+.warning-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 2rem;
+    border-radius: 50%;
+    background: rgba(220, 53, 69, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.warning-icon svg {
+    color: #dc3545;
+}
+
+.delete-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.delete-message {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.item-preview {
+    background: var(--bg-primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 2rem 0;
+    text-align: left;
+}
+
+.item-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.item-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.delete-form {
+    margin-top: 2rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.btn-delete {
+    padding: 1.125rem 2.5rem;
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.btn-delete:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(220, 53, 69, 0.3);
+}
+
+.btn-cancel {
+    padding: 1.125rem 2.5rem;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-subtle);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-cancel:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@media (max-width: 768px) {
+    .delete-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .delete-title {
+        font-size: 1.5rem;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+
+    .btn-delete,
+    .btn-cancel {
+        width: 100%;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="delete-container">
+    <div class="delete-card">
+        <div class="warning-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        </div>
+
+        <h1 class="delete-title">
+            Подтверждение удаления
+        </h1>
+
+        <p class="delete-message">
+            Вы действительно хотите удалить 
+            {% if 'news' in request.path %}эту новость{% else %}эту статью{% endif %}?
+            Это действие нельзя будет отменить.
+        </p>
+
+        <div class="item-preview">
+            <div class="item-label">
+                {% if 'news' in request.path %}Новость{% else %}Статья{% endif %}
+            </div>
+            <div class="item-title">{{ object.title }}</div>
+        </div>
+
+        <form method="post" class="delete-form">
+            {% csrf_token %}
+            
+            <div class="form-actions">
+                <a href="{% url 'post_detail' object.id %}" class="btn-cancel">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                    Отменить
+                </a>
+                
+                <button type="submit" class="btn-delete">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                    </svg>
+                    Удалить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

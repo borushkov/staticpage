@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results in Pinterest Style</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Search Results</h1>
+        
+        <!-- Форма поиска/фильтра -->
+        <form method="get">
+            {{ filterset.form.as_p }}  <!-- Отображение формы фильтра -->
+            <button type="submit">Search</button>
+        </form>
+        
+        <div class="pinterest-grid">
+            {% for post in posts %}
+                <div class="pin">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300x400?text=No+Image" alt="Placeholder">
+                    {% endif %}
+                    <h2>{{ post.title }}</h2>
+                    <p>{{ post.content|truncatewords:50 }}</p>
+                    <a href="{% url 'post_detail' post.pk %}">Read More</a>  <!-- Предполагаем URL name для detail -->
+                </div>
+            {% endfor %}
+            {% if not posts %}
+                <p>No results found.</p>
+            {% endif %}
+        </div>
+        <!-- Для бесконечного скролла: индикатор загрузки -->
+        <div id="loading" style="display: none;">Loading more...</div>
+    </div>
+    <script src="{% static 'js/infinite_scroll.js' %}"></script>
+</body>
+</html>

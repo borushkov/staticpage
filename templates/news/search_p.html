@@ -1,0 +1,466 @@
+{% extends 'base_p.html' %}
+{% load custom_filters %}
+
+{% block title %}Поиск публикаций - NewsPaper{% endblock %}
+
+{% block extra_styles %}
+/* Search Page Styles */
+.search-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.search-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s var(--transition-smooth);
+}
+
+.search-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-warm));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.search-subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.filter-panel {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-soft);
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.8s var(--transition-smooth);
+}
+
+.filter-form {
+    display: grid;
+    gap: 2rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-input,
+.form-select {
+    padding: 0.875rem 1.25rem;
+    border: 2px solid var(--border-subtle);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s var(--transition-smooth);
+    background: var(--bg-primary);
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--accent-warm);
+    background: var(--bg-secondary);
+    box-shadow: 0 0 0 3px rgba(212, 114, 44, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-search {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--accent-warm), #b85d1f);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-search:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.btn-reset {
+    padding: 1rem 2rem;
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-subtle);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s var(--transition-smooth);
+}
+
+.btn-reset:hover {
+    background: var(--bg-secondary);
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+/* Results Section */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-subtle);
+}
+
+.results-count {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.results-count span {
+    color: var(--accent-warm);
+}
+
+/* Masonry Grid for Results */
+.masonry-grid {
+    column-count: 2;
+    column-gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+@media (max-width: 968px) {
+    .masonry-grid {
+        column-count: 1;
+    }
+}
+
+.result-card {
+    break-inside: avoid;
+    margin-bottom: 1.5rem;
+    background: var(--bg-secondary);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.4s var(--transition-smooth);
+    cursor: pointer;
+    animation: fadeInUp 0.6s var(--transition-smooth) backwards;
+    position: relative;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.1s; }
+.result-card:nth-child(2) { animation-delay: 0.15s; }
+.result-card:nth-child(3) { animation-delay: 0.2s; }
+.result-card:nth-child(4) { animation-delay: 0.25s; }
+
+.result-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-medium);
+}
+
+.result-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-cool), var(--accent-warm));
+    opacity: 0;
+    transition: opacity 0.3s var(--transition-smooth);
+}
+
+.result-card:hover::before {
+    opacity: 1;
+}
+
+.result-content {
+    padding: 1.5rem;
+}
+
+.result-type {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 1rem;
+}
+
+.type-article {
+    background: rgba(44, 95, 125, 0.15);
+    color: var(--accent-cool);
+}
+
+.type-news {
+    background: rgba(212, 114, 44, 0.15);
+    color: var(--accent-warm);
+}
+
+.result-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.result-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.4rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+}
+
+.result-preview {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    animation: fadeIn 0.6s var(--transition-smooth);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-title {
+    font-family: 'Crimson Pro', serif;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.empty-text {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 3rem;
+    padding: 2rem 0;
+}
+
+.page-link {
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s var(--transition-smooth);
+    border: 1px solid var(--border-subtle);
+}
+
+.page-link:hover {
+    background: var(--accent-warm);
+    color: white;
+    border-color: var(--accent-warm);
+    transform: translateY(-2px);
+}
+
+.page-current {
+    background: var(--accent-cool);
+    color: white;
+    border-color: var(--accent-cool);
+}
+
+.page-ellipsis {
+    color: var(--text-secondary);
+    padding: 0 0.5rem;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-title {
+        font-size: 2rem;
+    }
+
+    .filter-panel {
+        padding: 1.5rem;
+    }
+
+    .filter-actions {
+        flex-direction: column;
+    }
+
+    .btn-search,
+    .btn-reset {
+        width: 100%;
+    }
+}
+{% endblock %}
+
+{% block content %}
+<div class="search-container">
+    <div class="search-header">
+        <h1 class="search-title">Поиск публикаций</h1>
+        <p class="search-subtitle">Найдите интересующие вас материалы</p>
+    </div>
+
+    <div class="filter-panel">
+        <form method="get" class="filter-form">
+            {{ filterset.form.as_p }}
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn-search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    Найти
+                </button>
+                <button type="reset" class="btn-reset" onclick="window.location.href='{% url 'search' %}'">
+                    Сбросить
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if posts %}
+    <div class="results-header">
+        <div class="results-count">
+            Найдено: <span>{{ posts|length }}</span> публикаций
+        </div>
+    </div>
+
+    <div class="masonry-grid">
+        {% for post in posts %}
+        <article class="result-card" onclick="window.location.href='{% url 'post_detail' post.id %}'">
+            <div class="result-content">
+                <span class="result-type {% if post.post_type == 'AR' %}type-article{% else %}type-news{% endif %}">
+                    {% if post.post_type == 'AR' %}Статья{% else %}Новость{% endif %}
+                </span>
+
+                <div class="result-meta">
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        {{ post.created_at|date:'d.m.Y' }}
+                    </span>
+                    <span>•</span>
+                    <span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        {{ post.author.user.username }}
+                    </span>
+                </div>
+
+                <h2 class="result-title">{{ post.title|censor }}</h2>
+                <p class="result-preview">{{ post.content|truncatechars:150|censor }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <nav class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">1</a>
+            {% if page_obj.previous_page_number != 1 %}
+                <span class="page-ellipsis">...</span>
+                <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ page_obj.previous_page_number }}</a>
+            {% endif %}
+        {% endif %}
+        
+        <span class="page-link page-current">{{ page_obj.number }}</span>
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ page_obj.next_page_number }}</a>
+            {% if paginator.num_pages != page_obj.next_page_number %}
+                <span class="page-ellipsis">...</span>
+                <a href="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" class="page-link">{{ paginator.num_pages }}</a>
+            {% endif %}
+        {% endif %}
+    </nav>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <h2 class="empty-title">Ничего не найдено</h2>
+        <p class="empty-text">Попробуйте изменить параметры поиска</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %} 
+{% load custom_filters %}
+<!-- Название у нас будет products -->
+{% block title %}
+Post
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим все товары -->
+{% block content %}
+{% load cache %}
+{% cache 300 sidebar %}
+<h1>Статья #{{post.id}}</h1>
+<h3>{{ post.title|censor }}</h3>
+<h3>{{post.created_at|date:'d.m.o'}}</h3>
+<h5> {{post.content|censor}}</h5>
+{% endcache %}
+{% endblock content %}

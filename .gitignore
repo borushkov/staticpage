@@ -1,0 +1,8 @@
+"mydata.json" 
+.env 
+cache_files/ 
+logs/ 
+db.sqlite3 
+__pycache__/ 
+*.pyc 
+mydata.json 
